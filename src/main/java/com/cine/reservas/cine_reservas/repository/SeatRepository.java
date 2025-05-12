@@ -16,8 +16,9 @@ public interface SeatRepository extends BaseRepository<SeatEntity, Long> {
             "WHERE bb.date = CURRENT_DATE " +
             "GROUP BY s.room.name")
     List<Object[]> findSeatAvailabilityByRoom();
-
-    int countByRoomId(Long roomId);
+    
+    @Query("SELECT COUNT(s) FROM SeatEntity s WHERE s.room.id = :roomId")
+    int countByRoomId(@Param("roomId") Long roomId);
 
 
 

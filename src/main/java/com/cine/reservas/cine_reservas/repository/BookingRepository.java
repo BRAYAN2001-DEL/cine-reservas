@@ -24,11 +24,14 @@ public interface BookingRepository extends BaseRepository<BookingEntity, Long> {
     @Query("SELECT b FROM BookingEntity b WHERE b.billboard.id = :billboardId")
     List<BookingEntity> findAllByBillboardId(@Param("billboardId") Long billboardId);
 
-    @Query("SELECT b FROM BookingEntity b " +
+    @Query("SELECT count(b) FROM BookingEntity b " +
             "JOIN b.billboard bb " +
-            "JOIN bb.movie m " +
-            "WHERE m.genre = :genre " +
-            "AND b.date BETWEEN :startDate AND :endDate")
-    int countOccupiedSeatsByRoomIdAndDate(@Param("roomId") Long roomId, @Param("date") LocalDate date);
+            "JOIN bb.room r " +
+            "WHERE r.id = :roomId " +
+            "AND b.date = :date")
+    int countOccupiedSeatsByRoomIdAndDate(
+            @Param("roomId") Long roomId,
+            @Param("date") LocalDate date);
+
 
 }
