@@ -28,5 +28,6 @@ public interface BookingRepository extends BaseRepository<BookingEntity, Long> {
     int countOccupiedSeatsByRoomIdAndDate(@Param("roomId") Long roomId, @Param("date") LocalDate date);
 
 
+    boolean existsByCustomerIdAndBillboardId(@Param("customerId")  Long customerId, @Param("billboardId")  Long billboardId);
 
 }

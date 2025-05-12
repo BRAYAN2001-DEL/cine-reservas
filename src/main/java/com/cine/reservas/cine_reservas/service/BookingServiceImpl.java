@@ -24,6 +24,9 @@ public class BookingServiceImpl implements BookingService {
     @Autowired
     private RoomRepository roomRepository;
 
+    @Autowired
+    private CustomerRepository customerRepository;
+
     @Override
     public List<BookingEntity> findHorrorMovieBookings(MovieGenreEnum genre, LocalDate startDate, LocalDate endDate) {
         return bookingRepository.findHorrorMovieBookings(genre, startDate, endDate);
@@ -69,5 +72,46 @@ public class BookingServiceImpl implements BookingService {
         billboardRepository.delete(billboard);
 
         System.out.println("✅ Cartelera y reservas canceladas: ID = " + billboardId);
+    }
+
+
+    @Override
+    @Transactional
+    public BookingEntity createBooking(Long customerId, Long seatId, Long billboardId) {
+
+        SeatEntity seat = seatRepository.findById(seatId)
+                .orElseThrow(() -> new RuntimeException("Butaca no encontrada"));
+
+        if (!seat.isStatus()) {
+            throw new RuntimeException("Butaca ocupada");
+        }
+
+
+        CustomerEntity customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
+
+        BillboardEntity billboard = billboardRepository.findById(billboardId)
+                .orElseThrow(() -> new RuntimeException("Cartelera no encontrada"));
+
+
+        boolean alreadyBooked = bookingRepository.existsByCustomerIdAndBillboardId(customerId, billboardId);
+        if (alreadyBooked) {
+            throw new RuntimeException("El cliente ya tiene una reserva para esta cartelera");
+        }
+
+        // Crear la reserva
+        BookingEntity booking = new BookingEntity();
+        booking.setCustomer(customer);
+        booking.setSeat(seat);
+        booking.setBillboard(billboard);
+        booking.setDate(LocalDate.now());
+
+        // Actualizar el estado de la butaca a ocupada
+        seat.setStatus(false);
+        seatRepository.save(seat);
+
+        // Guardar la reserva
+        return bookingRepository.save(booking);
     }
 }

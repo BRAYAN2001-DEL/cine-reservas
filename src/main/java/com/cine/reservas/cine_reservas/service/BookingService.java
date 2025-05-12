@@ -13,4 +13,8 @@ public interface BookingService {
     void disableSeatAndCancelBooking(Long seatId, Long bookingId);
 
     void cancelBillboardAndBookings(Long billboardId);
+
+    BookingEntity createBooking(Long customerId, Long seatId, Long billboardId);
+
+
 }

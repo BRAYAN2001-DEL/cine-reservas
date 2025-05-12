@@ -51,4 +51,19 @@ public class BookingController {
         bookingService.cancelBillboardAndBookings(billboardId);
         return "✅ Cartelera cancelada y reservas eliminadas.";
     }
+
+    @PostMapping("/reserve")
+    public BookingDTO reserveSeat(@RequestParam Long customerId,
+                                  @RequestParam Long seatId,
+                                  @RequestParam Long billboardId) {
+        var booking = bookingService.createBooking(customerId, seatId, billboardId);
+        return new BookingDTO(
+                booking.getId(),
+                booking.getCustomer().getName(),
+                booking.getBillboard().getMovie().getName(),
+                booking.getBillboard().getRoom().getName(),
+                booking.getDate().toString()
+        );
+    }
+
 }
